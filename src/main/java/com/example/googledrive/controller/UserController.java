@@ -4,6 +4,7 @@ import com.example.googledrive.dto.CreateUserDto;
 import com.example.googledrive.dto.UpdateUserDto;
 import com.example.googledrive.entity.User;
 import com.example.googledrive.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,7 @@ public class UserController {
     /*    - - - - - - - - - - - - - - - - - - -   */
 
     @PostMapping("/user/create")
-    public ResponseEntity<User> createUser(@RequestBody CreateUserDto dto) {
+    public ResponseEntity<User> createUser(@Valid @RequestBody CreateUserDto dto) {
         User user = userService.createUser(dto);
         return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
@@ -40,7 +41,7 @@ public class UserController {
     }
 
     @PutMapping("/user/update/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable String id, @RequestBody UpdateUserDto dto) {
+    public ResponseEntity<User> updateUser(@PathVariable String id, @Valid @RequestBody UpdateUserDto dto) {
         User user = userService.updateUser(id, dto);
         return new ResponseEntity<>(user, HttpStatus.OK);
     }

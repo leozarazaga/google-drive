@@ -1,6 +1,7 @@
 package com.example.googledrive.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.util.UUID;
@@ -17,8 +18,10 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
+    @NotBlank(message = "Username cannot be blank")
     private String username;
 
+    @NotBlank(message = "Email cannot be blank")
     private String email;
 
     public User(String username, String email) {
