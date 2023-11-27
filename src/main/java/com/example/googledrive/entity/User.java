@@ -1,9 +1,7 @@
 package com.example.googledrive.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.UUID;
 
@@ -23,4 +21,8 @@ public class User {
 
     private String email;
 
+    public User(String username, String email) {
+        this.username = username;
+        this.email = email;
+    }
 }
