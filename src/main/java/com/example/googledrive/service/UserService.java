@@ -1,6 +1,7 @@
 package com.example.googledrive.service;
 
 import com.example.googledrive.dto.CreateUserDto;
+import com.example.googledrive.dto.UpdateUserDto;
 import com.example.googledrive.entity.User;
 import com.example.googledrive.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,18 +22,40 @@ public class UserService {
 
     /*    - - - - - - - - - - - - - - - - - - -   */
 
-    public User createUser(CreateUserDto dto){
+    public User createUser(CreateUserDto dto) {
         User user = new User(dto.getUsername(), dto.getEmail());
         return userRepository.save(user);
     }
 
-    public List<User> getAllUsers(){
+    public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
-    public User getUserById(String id){
+    public User getUserById(String id) {
         UUID uuid = UUID.fromString(id);
         return userRepository.findById(uuid).orElseThrow();
     }
+
+
+    public User updateUser(String id, UpdateUserDto dto) {
+        UUID uuid = UUID.fromString(id);
+        User user = userRepository.findById(uuid).orElseThrow();
+
+        if (dto.getUsername().isPresent()) {
+            user.setUsername(dto.getUsername().get());
+        }
+
+        if (dto.getEmail().isPresent()) {
+            user.setEmail(dto.getEmail().get());
+        }
+        return userRepository.save(user);
+    }
+
+    public void deleteUser(String id) {
+        UUID uuid = UUID.fromString(id);
+        User user = userRepository.findById(uuid).orElseThrow();
+        userRepository.delete(user);
+    }
+
 
 }

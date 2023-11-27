@@ -1,6 +1,7 @@
 package com.example.googledrive.controller;
 
 import com.example.googledrive.dto.CreateUserDto;
+import com.example.googledrive.dto.UpdateUserDto;
 import com.example.googledrive.entity.User;
 import com.example.googledrive.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,16 @@ public class UserController {
         return new ResponseEntity<>(userService.getUserById(id), HttpStatus.OK);
     }
 
+    @PutMapping("/user/update/{id}")
+    public ResponseEntity<User> updateUser(@PathVariable String id, @RequestBody UpdateUserDto dto) {
+        User user = userService.updateUser(id, dto);
+        return new ResponseEntity<>(user, HttpStatus.OK);
+    }
 
+    @DeleteMapping("/user/delete/{id}")
+    public ResponseEntity<HttpStatus> deleteUser(@PathVariable String id) {
+        userService.deleteUser(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 
 }
