@@ -1,10 +1,7 @@
 package com.example.googledrive.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.UUID;
 
@@ -12,9 +9,8 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 
-@Table(name = "folder")
+@Table(name = "folders")
 public class Folder {
 
     @Id
@@ -22,4 +18,8 @@ public class Folder {
     private UUID id;
 
     private String folderName;
+
+    public Folder(String folderName) {
+        this.folderName = folderName;
+    }
 }
