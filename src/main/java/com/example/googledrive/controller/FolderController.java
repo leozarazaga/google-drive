@@ -4,7 +4,7 @@ import com.example.googledrive.dto.CreateFolderDto;
 import com.example.googledrive.dto.UpdateFolderDto;
 import com.example.googledrive.entity.Folder;
 import com.example.googledrive.service.FolderService;
-import com.example.googledrive.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +25,7 @@ public class FolderController {
     /*    - - - - - - - - - - - - - - - - - - -   */
 
     @PostMapping("/folder/create")
-    public ResponseEntity<Folder> createFolder(@RequestBody CreateFolderDto dto) {
+    public ResponseEntity<Folder> createFolder(@Valid @RequestBody CreateFolderDto dto) {
         Folder folder = folderService.createFolder(dto);
         return new ResponseEntity<>(folder, HttpStatus.CREATED);
     }
@@ -48,7 +48,7 @@ public class FolderController {
     }
 
     @PutMapping("/folder/update/{id}")
-    public ResponseEntity<Folder> updateFolder(@PathVariable String id, @RequestBody UpdateFolderDto dto) {
+    public ResponseEntity<Folder> updateFolder(@PathVariable String id, @Valid @RequestBody UpdateFolderDto dto) {
         Folder folder = folderService.updateFolder(id, dto);
         return new ResponseEntity<>(folder, HttpStatus.OK);
     }
@@ -58,6 +58,7 @@ public class FolderController {
         folderService.deleteFolder(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
 
 
 }
