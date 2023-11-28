@@ -1,5 +1,6 @@
 package com.example.googledrive.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -26,6 +27,7 @@ public class User {
     @NotBlank(message = "Email cannot be blank")
     private String email;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Folder> folders = new ArrayList<>();
 

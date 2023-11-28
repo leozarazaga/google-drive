@@ -1,9 +1,6 @@
 package com.example.googledrive;
 
-import com.example.googledrive.exception.ErrorResponse;
-import com.example.googledrive.exception.FolderNotFoundException;
-import com.example.googledrive.exception.NoSearchResultFoundException;
-import com.example.googledrive.exception.UserNotFoundException;
+import com.example.googledrive.exception.*;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +29,12 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
 
     @ExceptionHandler(NoSearchResultFoundException.class)
     public ResponseEntity<Object> handleNoSearchResultFoundException(NoSearchResultFoundException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(Arrays.asList(ex.getLocalizedMessage()));
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(FileAlreadyExistsException.class)
+    public ResponseEntity<Object> handleFileAlreadyExistsException(FileAlreadyExistsException ex) {
         ErrorResponse errorResponse = new ErrorResponse(Arrays.asList(ex.getLocalizedMessage()));
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
