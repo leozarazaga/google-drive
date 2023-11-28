@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -23,6 +25,9 @@ public class User {
 
     @NotBlank(message = "Email cannot be blank")
     private String email;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Folder> folders = new ArrayList<>();
 
     public User(String username, String email) {
         this.username = username;

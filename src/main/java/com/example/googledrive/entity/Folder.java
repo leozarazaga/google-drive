@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -20,6 +22,13 @@ public class Folder {
 
     @NotBlank(message = "Folder name cannot be blank")
     private String folderName;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @OneToMany(mappedBy = "folder", cascade = CascadeType.ALL)
+    private List<File> files = new ArrayList<>();
 
     public Folder(String folderName) {
         this.folderName = folderName;
