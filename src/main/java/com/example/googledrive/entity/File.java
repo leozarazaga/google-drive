@@ -20,9 +20,12 @@ public class File {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    private String fileName;
+    private String name;
 
-    private byte[] content;
+    private String type;
+
+    @Lob
+    private byte[] data;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -32,12 +35,9 @@ public class File {
     @JoinColumn(name = "folder_id")
     private Folder folder;
 
-    public File(String fileName, byte[] content, User user, Folder folder) {
-        this.fileName = fileName;
-        this.content = content;
-        this.user = user;
-        this.folder = folder;
+    public File(String name, String type, byte[] data) {
+        this.name = name;
+        this.type = type;
+        this.data = data;
     }
-
-
 }
