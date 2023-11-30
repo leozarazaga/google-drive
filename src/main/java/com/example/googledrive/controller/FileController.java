@@ -28,17 +28,17 @@ public class FileController {
 
     @PostMapping("/file/upload")
     public ResponseEntity<ResponseMessage> uploadFile(@RequestParam("file") MultipartFile file) {
-        String message = "";
         try {
             fileService.store(file);
-
-            message = "Uploaded the file successfully: " + file.getOriginalFilename();
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));
+            String successMessage = "Uploaded the file successfully: " + file.getOriginalFilename();
+            return new ResponseEntity<>(new ResponseMessage(successMessage), HttpStatus.CREATED);
         } catch (Exception e) {
-            message = "Could not upload file: " + file.getOriginalFilename() + "!";
-            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
+            String errorMessage = "Could not upload file: " + file.getOriginalFilename();
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(errorMessage));
         }
     }
+
+
 
     @GetMapping("/files")
     public ResponseEntity<List<ResponseFile>> getListFiles(){
@@ -64,9 +64,10 @@ public class FileController {
     public ResponseEntity<byte[]> getFile(@PathVariable String id) {
         File fileDB = fileService.getFile(id);
 
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileDB.getName() + "\"")
-                .body(fileDB.getData());
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentDispositionFormData("attachment", fileDB.getName());
+        return new ResponseEntity<>(fileDB.getData(), headers, HttpStatus.OK);
     }
+
 
 }
