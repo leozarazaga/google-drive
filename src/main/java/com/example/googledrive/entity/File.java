@@ -1,9 +1,7 @@
 package com.example.googledrive.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.UUID;
@@ -11,7 +9,7 @@ import java.util.UUID;
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
+//@NoArgsConstructor
 
 @Table(name = "files")
 public class File {
@@ -19,13 +17,11 @@ public class File {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
-
     private String name;
-
     private String type;
-
     @Lob
     private byte[] data;
+
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -35,9 +31,17 @@ public class File {
     @JoinColumn(name = "folder_id")
     private Folder folder;
 
+
+    public File() {
+    }
+
     public File(String name, String type, byte[] data) {
         this.name = name;
         this.type = type;
         this.data = data;
     }
+
+
+
 }
+

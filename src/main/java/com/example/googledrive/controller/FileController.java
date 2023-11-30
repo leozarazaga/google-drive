@@ -1,6 +1,5 @@
 package com.example.googledrive.controller;
 
-import com.example.googledrive.dto.CreateFileDto;
 import com.example.googledrive.entity.File;
 import com.example.googledrive.message.ResponseFile;
 import com.example.googledrive.message.ResponseMessage;
@@ -32,16 +31,18 @@ public class FileController {
         String message = "";
         try {
             fileService.store(file);
+
             message = "Uploaded the file successfully: " + file.getOriginalFilename();
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));
         } catch (Exception e) {
-            message = "Could not upload teh file: " + file.getOriginalFilename() + "!";
+            message = "Could not upload file: " + file.getOriginalFilename() + "!";
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
         }
     }
 
     @GetMapping("/files")
     public ResponseEntity<List<ResponseFile>> getListFiles(){
+
         List<ResponseFile> files = fileService.getAllFiles().stream().map(dbFile ->{
             String fileDownloadUri = ServletUriComponentsBuilder
                     .fromCurrentContextPath()
@@ -55,11 +56,11 @@ public class FileController {
                     dbFile.getType(),
                     dbFile.getData().length);
         }).collect(Collectors.toList());
-
         return ResponseEntity.status(HttpStatus.OK).body(files);
     }
 
-    @GetMapping("/file/{id}")
+
+    @GetMapping("/files/{id}")
     public ResponseEntity<byte[]> getFile(@PathVariable String id) {
         File fileDB = fileService.getFile(id);
 
@@ -67,6 +68,5 @@ public class FileController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileDB.getName() + "\"")
                 .body(fileDB.getData());
     }
-
 
 }

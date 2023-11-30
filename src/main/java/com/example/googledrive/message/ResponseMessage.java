@@ -12,4 +12,5 @@ public class ResponseMessage {
     public ResponseMessage(String message) {
         this.message = message;
     }
+
 }
