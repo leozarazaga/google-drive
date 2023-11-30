@@ -2,15 +2,19 @@ package com.example.googledrive.controller;
 
 import com.example.googledrive.dto.CreateFileDto;
 import com.example.googledrive.entity.File;
+import com.example.googledrive.message.ResponseFile;
 import com.example.googledrive.message.ResponseMessage;
 import com.example.googledrive.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 public class FileController {
@@ -36,6 +40,33 @@ public class FileController {
         }
     }
 
+    @GetMapping("/files")
+    public ResponseEntity<List<ResponseFile>> getListFiles(){
+        List<ResponseFile> files = fileService.getAllFiles().stream().map(dbFile ->{
+            String fileDownloadUri = ServletUriComponentsBuilder
+                    .fromCurrentContextPath()
+                    .path("/files/")
+                    .path(dbFile.getId().toString())
+                    .toUriString();
+
+            return new ResponseFile(
+                    dbFile.getName(),
+                    fileDownloadUri,
+                    dbFile.getType(),
+                    dbFile.getData().length);
+        }).collect(Collectors.toList());
+
+        return ResponseEntity.status(HttpStatus.OK).body(files);
+    }
+
+    @GetMapping("/file/{id}")
+    public ResponseEntity<byte[]> getFile(@PathVariable String id) {
+        File fileDB = fileService.getFile(id);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileDB.getName() + "\"")
+                .body(fileDB.getData());
+    }
 
 
 }
