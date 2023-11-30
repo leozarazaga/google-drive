@@ -3,6 +3,7 @@ package com.example.googledrive.service;
 import com.example.googledrive.dto.CreateFolderDto;
 import com.example.googledrive.dto.UpdateFolderDto;
 import com.example.googledrive.entity.Folder;
+import com.example.googledrive.entity.User;
 import com.example.googledrive.exception.FolderNotFoundException;
 import com.example.googledrive.exception.NoSearchResultFoundException;
 import com.example.googledrive.repository.FolderRepository;

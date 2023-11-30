@@ -27,9 +27,9 @@ public class FileController {
     /*    - - - - - - - - - - - - - - - - - - -   */
 
     @PostMapping("/file/upload")
-    public ResponseEntity<ResponseMessage> uploadFile(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<ResponseMessage> uploadFile(@RequestParam("file") MultipartFile file, @RequestParam("folderId") String folderId, @RequestParam("userId") String userId) {
         try {
-            fileService.store(file);
+            fileService.store(file, folderId, userId);
             String successMessage = "Uploaded the file successfully: " + file.getOriginalFilename();
             return new ResponseEntity<>(new ResponseMessage(successMessage), HttpStatus.CREATED);
         } catch (Exception e) {
@@ -39,11 +39,9 @@ public class FileController {
     }
 
 
-
     @GetMapping("/files")
-    public ResponseEntity<List<ResponseFile>> getListFiles(){
-
-        List<ResponseFile> files = fileService.getAllFiles().stream().map(dbFile ->{
+    public ResponseEntity<List<ResponseFile>> getListFiles() {
+        List<ResponseFile> files = fileService.getAllFiles().stream().map(dbFile -> {
             String fileDownloadUri = ServletUriComponentsBuilder
                     .fromCurrentContextPath()
                     .path("/files/")
@@ -54,8 +52,12 @@ public class FileController {
                     dbFile.getName(),
                     fileDownloadUri,
                     dbFile.getType(),
-                    dbFile.getData().length);
+                    dbFile.getData().length,
+                    dbFile.getFolder() != null ? dbFile.getFolder().getFolderName() : null,
+                    dbFile.getUser() != null ? dbFile.getUser().getUsername() : null);
+
         }).collect(Collectors.toList());
+
         return ResponseEntity.status(HttpStatus.OK).body(files);
     }
 

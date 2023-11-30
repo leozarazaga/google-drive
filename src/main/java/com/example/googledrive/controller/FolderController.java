@@ -3,6 +3,7 @@ package com.example.googledrive.controller;
 import com.example.googledrive.dto.CreateFolderDto;
 import com.example.googledrive.dto.UpdateFolderDto;
 import com.example.googledrive.entity.Folder;
+import com.example.googledrive.entity.User;
 import com.example.googledrive.service.FolderService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ public class FolderController {
 
     @PostMapping("/folder/create")
     public ResponseEntity<Folder> createFolder(@Valid @RequestBody CreateFolderDto dto) {
+        //User authenticatedUser =
         Folder folder = folderService.createFolder(dto);
         return new ResponseEntity<>(folder, HttpStatus.CREATED);
     }

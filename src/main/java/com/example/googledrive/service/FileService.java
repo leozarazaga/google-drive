@@ -1,7 +1,11 @@
 package com.example.googledrive.service;
 
 import com.example.googledrive.entity.File;
+import com.example.googledrive.entity.Folder;
+import com.example.googledrive.entity.User;
 import com.example.googledrive.exception.FileNotFoundException;
+import com.example.googledrive.exception.FolderNotFoundException;
+import com.example.googledrive.exception.UserNotFoundException;
 import com.example.googledrive.repository.FileRepository;
 import com.example.googledrive.repository.FolderRepository;
 import com.example.googledrive.repository.UserRepository;
@@ -30,10 +34,18 @@ public class FileService {
 
     /*    - - - - - - - - - - - - - - - - - - -   */
 
-    public void store(MultipartFile file) throws IOException {
+    public void store(MultipartFile file, String folderId, String userId) throws IOException {
+        UUID folderUUID = UUID.fromString(folderId);
+        Folder folder = folderRepository.findById(folderUUID).orElseThrow(() -> new FolderNotFoundException(folderId));
+
+        UUID userUUID = UUID.fromString(userId);
+        User user = userRepository.findById(userUUID).orElseThrow(() -> new UserNotFoundException(userId));
+
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-        File FileDB = new File(fileName, file.getContentType(), file.getBytes());
-        fileRepository.save(FileDB);
+        File fileDB = new File(fileName, file.getContentType(), file.getBytes());
+        fileDB.setFolder(folder);
+        fileDB.setUser(user);
+        fileRepository.save(fileDB);
     }
 
     public List<File> getAllFiles() {
