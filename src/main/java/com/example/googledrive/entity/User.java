@@ -23,9 +23,11 @@ public class User {
     private UUID id;
 
     @NotBlank(message = "Username cannot be blank")
+    @Column(unique = true)
     private String username;
 
-    @NotBlank(message = "Email cannot be blank")
+     @NotBlank(message = "Email cannot be blank")
+    @Column(unique = true)
     private String email;
 
     @JsonIgnore()

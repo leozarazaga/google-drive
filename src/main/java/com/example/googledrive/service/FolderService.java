@@ -4,12 +4,12 @@ import com.example.googledrive.dto.CreateFolderDto;
 import com.example.googledrive.dto.UpdateFolderDto;
 import com.example.googledrive.entity.File;
 import com.example.googledrive.entity.Folder;
-import com.example.googledrive.entity.User;
 import com.example.googledrive.exception.FolderNotFoundException;
 import com.example.googledrive.exception.NoSearchResultFoundException;
 import com.example.googledrive.repository.FolderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -45,7 +45,7 @@ public class FolderService {
         Folder folder = getFolderById(folderId);
         return folder.getFiles();
     }
-
+    @Transactional
     public List<Folder> searchByFolderName(String search) {
         List<Folder> findByFolderName = folderRepository.findByFolderNameContainingIgnoreCase(search);
 
