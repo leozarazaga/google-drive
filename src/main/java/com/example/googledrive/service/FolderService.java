@@ -2,6 +2,7 @@ package com.example.googledrive.service;
 
 import com.example.googledrive.dto.CreateFolderDto;
 import com.example.googledrive.dto.UpdateFolderDto;
+import com.example.googledrive.entity.File;
 import com.example.googledrive.entity.Folder;
 import com.example.googledrive.entity.User;
 import com.example.googledrive.exception.FolderNotFoundException;
@@ -25,6 +26,7 @@ public class FolderService {
 
     /*    - - - - - - - - - - - - - - - - - - -   */
 
+
     public Folder createFolder(CreateFolderDto dto) {
         Folder folder = new Folder(dto.getFolderName());
         return folderRepository.save(folder);
@@ -37,6 +39,11 @@ public class FolderService {
     public Folder getFolderById(String id) {
         UUID uuid = UUID.fromString(id);
         return folderRepository.findById(uuid).orElseThrow(() -> new FolderNotFoundException(id));
+    }
+
+    public List<File> getFilesForFolder(String folderId) {
+        Folder folder = getFolderById(folderId);
+        return folder.getFiles();
     }
 
     public List<Folder> searchByFolderName(String search) {

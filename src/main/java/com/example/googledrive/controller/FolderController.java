@@ -2,8 +2,8 @@ package com.example.googledrive.controller;
 
 import com.example.googledrive.dto.CreateFolderDto;
 import com.example.googledrive.dto.UpdateFolderDto;
+import com.example.googledrive.entity.File;
 import com.example.googledrive.entity.Folder;
-import com.example.googledrive.entity.User;
 import com.example.googledrive.service.FolderService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +41,13 @@ public class FolderController {
     public ResponseEntity<Folder> getFolderById(@PathVariable String id) {
         Folder folder = folderService.getFolderById(id);
         return new ResponseEntity<>(folder, HttpStatus.OK);
+    }
+
+    //Test
+    @GetMapping("/folder/{id}/files")
+    public ResponseEntity<List<File>> getFilesForFolder(@PathVariable String id) {
+        List<File> files = folderService.getFilesForFolder(id);
+        return new ResponseEntity<>(files, HttpStatus.OK);
     }
 
     @GetMapping("/folder/search/{search}")
