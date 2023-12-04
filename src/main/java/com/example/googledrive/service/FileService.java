@@ -51,10 +51,16 @@ public class FileService {
     public List<File> getAllFiles() {
         return fileRepository.findAll();
     }
+
     public File getFile(String id) {
         UUID uuid = UUID.fromString(id);
         return fileRepository.findById(uuid).orElseThrow(() -> new FileNotFoundException(id));
     }
 
+    public void deleteFileById(String id) {
+        UUID uuid = UUID.fromString(id);
+        File file = fileRepository.findById(uuid).orElseThrow(() -> new FileNotFoundException(id));
+        fileRepository.delete(file);
+    }
 
 }

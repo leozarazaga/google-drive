@@ -71,5 +71,11 @@ public class FileController {
         return new ResponseEntity<>(fileDB.getData(), headers, HttpStatus.OK);
     }
 
+    @DeleteMapping("/files/delete/{id}")
+    public ResponseEntity<HttpStatus> deleteFileById(@PathVariable String id) {
+        fileService.deleteFileById(id);
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
 
 }
