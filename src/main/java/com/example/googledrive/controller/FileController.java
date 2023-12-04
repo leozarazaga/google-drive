@@ -1,6 +1,7 @@
 package com.example.googledrive.controller;
 
 import com.example.googledrive.entity.File;
+import com.example.googledrive.entity.User;
 import com.example.googledrive.message.ResponseFile;
 import com.example.googledrive.message.ResponseMessage;
 import com.example.googledrive.service.FileService;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -40,8 +42,8 @@ public class FileController {
 
 
     @GetMapping("/files")
-    public ResponseEntity<List<ResponseFile>> getListFiles() {
-        List<ResponseFile> files = fileService.getAllFiles().stream().map(dbFile -> {
+    public ResponseEntity<List<ResponseFile>> getListFiles(@AuthenticationPrincipal User user) {
+        List<ResponseFile> files = fileService.getAllFilesByUser(user).stream().map(dbFile -> {
             String fileDownloadUri = ServletUriComponentsBuilder
                     .fromCurrentContextPath()
                     .path("/files/")

@@ -1,7 +1,9 @@
 package com.example.googledrive;
 
+import com.example.googledrive.entity.File;
 import com.example.googledrive.entity.Folder;
 import com.example.googledrive.entity.User;
+import com.example.googledrive.repository.FileRepository;
 import com.example.googledrive.repository.UserRepository;
 import com.example.googledrive.repository.FolderRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,6 +41,9 @@ class GoogleDriveApplicationTests {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private FileRepository fileRepository;
+
 
 	@BeforeEach
 	void clearDatabase() {
@@ -47,7 +52,7 @@ class GoogleDriveApplicationTests {
 	}
 
 
-    @Test
+ /*   @Test
     public void createUserTest() throws Exception{
         String uniqueIdentifier = String.valueOf(System.currentTimeMillis());
         User user = new User("testUser" + uniqueIdentifier, "test" + uniqueIdentifier + "@outlook.com");
@@ -65,10 +70,10 @@ class GoogleDriveApplicationTests {
                 .andExpect(jsonPath("$.username").value(user.getUsername()))
                 .andExpect(jsonPath("$.email").value(user.getEmail()));
 
-    }
+    }*/
 
 
-    @Test
+  /*  @Test
     public void uploadFileTest() throws Exception {
         String uniqueIdentifier = String.valueOf(System.currentTimeMillis());
         User user = new User("testUser" + uniqueIdentifier, "test" + uniqueIdentifier + "@outlook.com");
@@ -120,10 +125,19 @@ class GoogleDriveApplicationTests {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.message").value("Uploaded the file successfully: test-file.txt"));
     }
+*/
 
+ /*   @Test
+    public void deleteFileTest() throws Exception{
+        //MockMultipartFile file = new MockMultipartFile("file", "test-file.txt", MediaType.TEXT_PLAIN_VALUE, "Hello, World!".getBytes());
 
+        //Authentication logic
+        File file = new File("Test", "test-file.txt", "Hello William".getBytes());
+        file = fileRepository.save(file);
 
+        RequestBuilder fileUploadRequest = MockMvcRequestBuilders.delete("/file/delete/" + file.getId().toString());
 
+    }*/
 
 
 

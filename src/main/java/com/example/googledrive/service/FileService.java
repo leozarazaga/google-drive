@@ -25,6 +25,14 @@ public class FileService {
     private final FolderRepository folderRepository;
     private final FileRepository fileRepository;
 
+    /**
+     * This code does this
+     *
+     * @param userRepository
+     * @param folderRepository
+     * @param fileRepository
+     */
+
     @Autowired
     public FileService(UserRepository userRepository, FolderRepository folderRepository, FileRepository fileRepository) {
         this.userRepository = userRepository;
@@ -48,8 +56,8 @@ public class FileService {
         fileRepository.save(fileDB);
     }
 
-    public List<File> getAllFiles() {
-        return fileRepository.findAll();
+    public List<File> getAllFilesByUser(User user) {
+        return fileRepository.findByUser(user);
     }
 
     public File getFile(String id) {

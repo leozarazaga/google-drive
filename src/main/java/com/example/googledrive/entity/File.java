@@ -3,6 +3,7 @@ package com.example.googledrive.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Type;
 
 import java.util.List;
 import java.util.UUID;
@@ -19,6 +20,7 @@ public class File {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
     private String name;
+
     private String type;
     @Lob
     private byte[] data;

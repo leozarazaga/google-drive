@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+
 public class FolderController {
 
     private final FolderService folderService;
@@ -28,7 +29,7 @@ public class FolderController {
     @PostMapping("/folder/create")
     public ResponseEntity<Folder> createFolder(@Valid @RequestBody CreateFolderDto dto) {
         //User authenticatedUser =
-        Folder folder = folderService.createFolder(dto);
+        var folder = folderService.createFolder(dto);
         return new ResponseEntity<>(folder, HttpStatus.CREATED);
     }
 
