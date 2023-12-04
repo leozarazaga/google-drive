@@ -11,6 +11,7 @@ import com.example.googledrive.repository.FolderRepository;
 import com.example.googledrive.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,13 +26,6 @@ public class FileService {
     private final FolderRepository folderRepository;
     private final FileRepository fileRepository;
 
-    /**
-     * This code does this
-     *
-     * @param userRepository
-     * @param folderRepository
-     * @param fileRepository
-     */
 
     @Autowired
     public FileService(UserRepository userRepository, FolderRepository folderRepository, FileRepository fileRepository) {
@@ -42,6 +36,7 @@ public class FileService {
 
     /*    - - - - - - - - - - - - - - - - - - -   */
 
+    @Transactional
     public void store(MultipartFile file, String folderId, String userId) throws IOException {
         UUID folderUUID = UUID.fromString(folderId);
         Folder folder = folderRepository.findById(folderUUID).orElseThrow(() -> new FolderNotFoundException(folderId));
@@ -56,18 +51,22 @@ public class FileService {
         fileRepository.save(fileDB);
     }
 
+    @Transactional
     public List<File> getAllFilesByUser(User user) {
         return fileRepository.findByUser(user);
     }
 
-    public File getFile(String id) {
+
+    @Transactional
+    public File getFileByUser(String id, User user) {
         UUID uuid = UUID.fromString(id);
-        return fileRepository.findById(uuid).orElseThrow(() -> new FileNotFoundException(id));
+        return fileRepository.findByIdAndUser(uuid, user).orElseThrow(() -> new FileNotFoundException(id));
     }
 
-    public void deleteFileById(String id) {
+    @Transactional
+    public void deleteFileByUser(String id, User user) {
         UUID uuid = UUID.fromString(id);
-        File file = fileRepository.findById(uuid).orElseThrow(() -> new FileNotFoundException(id));
+        File file = fileRepository.findByIdAndUser(uuid, user).orElseThrow(() -> new FileNotFoundException(id));
         fileRepository.delete(file);
     }
 

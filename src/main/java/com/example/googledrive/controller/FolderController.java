@@ -28,8 +28,7 @@ public class FolderController {
 
     @PostMapping("/folder/create")
     public ResponseEntity<Folder> createFolder(@Valid @RequestBody CreateFolderDto dto) {
-        //User authenticatedUser =
-        var folder = folderService.createFolder(dto);
+        Folder folder = folderService.createFolder(dto);
         return new ResponseEntity<>(folder, HttpStatus.CREATED);
     }
 
@@ -68,7 +67,6 @@ public class FolderController {
         folderService.deleteFolder(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
 
 
 }

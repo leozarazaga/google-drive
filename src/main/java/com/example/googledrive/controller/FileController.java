@@ -2,6 +2,7 @@ package com.example.googledrive.controller;
 
 import com.example.googledrive.entity.File;
 import com.example.googledrive.entity.User;
+import com.example.googledrive.exception.FileNotFoundException;
 import com.example.googledrive.message.ResponseFile;
 import com.example.googledrive.message.ResponseMessage;
 import com.example.googledrive.service.FileService;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -42,7 +44,7 @@ public class FileController {
 
 
     @GetMapping("/files")
-    public ResponseEntity<List<ResponseFile>> getListFiles(@AuthenticationPrincipal User user) {
+    public ResponseEntity<List<ResponseFile>> retrieveAllFilesByUser(@AuthenticationPrincipal User user) {
         List<ResponseFile> files = fileService.getAllFilesByUser(user).stream().map(dbFile -> {
             String fileDownloadUri = ServletUriComponentsBuilder
                     .fromCurrentContextPath()
@@ -63,21 +65,30 @@ public class FileController {
         return ResponseEntity.status(HttpStatus.OK).body(files);
     }
 
-
-    @GetMapping("/files/{id}")
-    public ResponseEntity<byte[]> getFile(@PathVariable String id) {
-        File fileDB = fileService.getFile(id);
+//Version 1.0
+   /* @GetMapping("/files/{id}")
+    public ResponseEntity<byte[]> retrieveFileById(@PathVariable String id) {
+        File fileDB = fileService.getFileByUser(id);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentDispositionFormData("attachment", fileDB.getName());
         return new ResponseEntity<>(fileDB.getData(), headers, HttpStatus.OK);
+    }*/
+
+    //Version testing 2.0
+    @GetMapping("/files/{id}")
+    public ResponseEntity<byte[]> retrieveFileById(@PathVariable String id, @AuthenticationPrincipal User user) {
+        File file = fileService.getFileByUser(id, user);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentDispositionFormData("attachment", file.getName());
+        return new ResponseEntity<>(file.getData(), headers, HttpStatus.OK);
     }
+
 
     @DeleteMapping("/files/delete/{id}")
-    public ResponseEntity<HttpStatus> deleteFileById(@PathVariable String id) {
-        fileService.deleteFileById(id);
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity<HttpStatus> deleteFileById(@PathVariable String id, @AuthenticationPrincipal User user) {
+        fileService.deleteFileByUser(id, user);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
-
 }

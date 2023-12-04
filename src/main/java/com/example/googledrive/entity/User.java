@@ -33,7 +33,7 @@ public class User implements UserDetails {
     @NotBlank(message = "Password cannot be blank")
     private String password;
 
-     @NotBlank(message = "Email cannot be blank")
+    @NotBlank(message = "Email cannot be blank")
     @Column(unique = true)
     private String email;
 

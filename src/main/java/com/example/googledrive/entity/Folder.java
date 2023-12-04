@@ -29,7 +29,7 @@ public class Folder {
     private User user;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "folder", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "folder", cascade = CascadeType.ALL)
     private List<File> files = new ArrayList<>();
 
     public Folder(String folderName) {
