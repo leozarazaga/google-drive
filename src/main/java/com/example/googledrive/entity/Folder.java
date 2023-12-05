@@ -1,6 +1,7 @@
 package com.example.googledrive.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -13,6 +14,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
+//@JsonInclude(JsonInclude.Include.NON_NULL)
 
 @Table(name = "folders")
 public class Folder {

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -30,17 +31,22 @@ public class FileController {
 
     /*    - - - - - - - - - - - - - - - - - - -   */
 
+
     @PostMapping("/file/upload")
     public ResponseEntity<ResponseMessage> uploadFile(@RequestParam("file") MultipartFile file, @RequestParam("folderId") String folderId, @RequestParam("userId") String userId) {
         try {
             fileService.store(file, folderId, userId);
             String successMessage = "Uploaded the file successfully: " + file.getOriginalFilename();
             return new ResponseEntity<>(new ResponseMessage(successMessage), HttpStatus.CREATED);
+        } catch (AccessDeniedException e) {
+            // Handle access denied exception
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ResponseMessage("Access denied: " + e.getMessage()));
         } catch (Exception e) {
             String errorMessage = "Could not upload file: " + file.getOriginalFilename();
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(errorMessage));
         }
     }
+
 
 
     @GetMapping("/files")
@@ -65,17 +71,7 @@ public class FileController {
         return ResponseEntity.status(HttpStatus.OK).body(files);
     }
 
-//Version 1.0
-   /* @GetMapping("/files/{id}")
-    public ResponseEntity<byte[]> retrieveFileById(@PathVariable String id) {
-        File fileDB = fileService.getFileByUser(id);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentDispositionFormData("attachment", fileDB.getName());
-        return new ResponseEntity<>(fileDB.getData(), headers, HttpStatus.OK);
-    }*/
-
-    //Version testing 2.0
     @GetMapping("/files/{id}")
     public ResponseEntity<byte[]> retrieveFileById(@PathVariable String id, @AuthenticationPrincipal User user) {
         File file = fileService.getFileByUser(id, user);

@@ -34,7 +34,7 @@ public class FolderController {
 
     @GetMapping("/folder/all")
     public ResponseEntity<List<Folder>> getAllFolders() {
-        return new ResponseEntity<>(folderService.findAllFolders(), HttpStatus.OK);
+        return new ResponseEntity<>(folderService.getAllFoldersByUser(), HttpStatus.OK);
     }
 
     @GetMapping("/folder/{id}")

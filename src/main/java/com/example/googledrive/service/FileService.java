@@ -10,6 +10,7 @@ import com.example.googledrive.repository.FileRepository;
 import com.example.googledrive.repository.FolderRepository;
 import com.example.googledrive.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -44,12 +45,17 @@ public class FileService {
         UUID userUUID = UUID.fromString(userId);
         User user = userRepository.findById(userUUID).orElseThrow(() -> new UserNotFoundException(userId));
 
+        if (!folder.getUser().equals(user)) {
+            throw new AccessDeniedException("You do not have permission to upload files to this folder");
+        }
+
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
         File fileDB = new File(fileName, file.getContentType(), file.getBytes());
         fileDB.setFolder(folder);
         fileDB.setUser(user);
         fileRepository.save(fileDB);
     }
+
 
     @Transactional
     public List<File> getAllFilesByUser(User user) {

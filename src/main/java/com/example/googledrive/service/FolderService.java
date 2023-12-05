@@ -4,10 +4,14 @@ import com.example.googledrive.dto.CreateFolderDto;
 import com.example.googledrive.dto.UpdateFolderDto;
 import com.example.googledrive.entity.File;
 import com.example.googledrive.entity.Folder;
+import com.example.googledrive.entity.User;
 import com.example.googledrive.exception.FolderNotFoundException;
 import com.example.googledrive.exception.NoSearchResultFoundException;
+import com.example.googledrive.exception.UserNotFoundException;
 import com.example.googledrive.repository.FolderRepository;
+import com.example.googledrive.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,21 +22,30 @@ import java.util.UUID;
 public class FolderService {
 
     private final FolderRepository folderRepository;
+    private  final UserRepository userRepository;
+
 
     @Autowired
-    public FolderService(FolderRepository folderRepository) {
+    public FolderService(FolderRepository folderRepository, UserRepository userRepository) {
         this.folderRepository = folderRepository;
+        this.userRepository = userRepository;
     }
 
     /*    - - - - - - - - - - - - - - - - - - -   */
 
 
     public Folder createFolder(CreateFolderDto dto) {
+        String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        User currentUser = userRepository.findByUsername(currentUsername)
+                .orElseThrow(() -> new UserNotFoundException(currentUsername));
+
         Folder folder = new Folder(dto.getFolderName());
+        folder.setUser(currentUser);
+
         return folderRepository.save(folder);
     }
 
-    public List<Folder> findAllFolders() {
+    public List<Folder> getAllFoldersByUser() {
         return folderRepository.findAll();
     }
 
