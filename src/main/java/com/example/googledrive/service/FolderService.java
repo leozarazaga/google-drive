@@ -10,7 +10,9 @@ import com.example.googledrive.exception.NoSearchResultFoundException;
 import com.example.googledrive.exception.UserNotFoundException;
 import com.example.googledrive.repository.FolderRepository;
 import com.example.googledrive.repository.UserRepository;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +24,7 @@ import java.util.UUID;
 public class FolderService {
 
     private final FolderRepository folderRepository;
-    private  final UserRepository userRepository;
+    private final UserRepository userRepository;
 
 
     @Autowired
@@ -41,26 +43,43 @@ public class FolderService {
 
         Folder folder = new Folder(dto.getFolderName());
         folder.setUser(currentUser);
-
         return folderRepository.save(folder);
     }
 
-    public List<Folder> getAllFoldersByUser() {
-        return folderRepository.findAll();
+    public List<Folder> getAllFoldersByUser(User user) {
+        return folderRepository.findByUser(user);
     }
 
-    public Folder getFolderById(String id) {
+
+    public Folder getFolderById(String id, User user) {
         UUID uuid = UUID.fromString(id);
-        return folderRepository.findById(uuid).orElseThrow(() -> new FolderNotFoundException(id));
+
+        Folder folder = folderRepository.findByIdAndUser(uuid, user)
+                .orElseThrow(() -> new FolderNotFoundException(id));
+
+        return folder;
     }
 
-    public List<File> getFilesForFolder(String folderId) {
-        Folder folder = getFolderById(folderId);
-        return folder.getFiles();
+    //@Transactional
+    public List<File> getFilesFromFolder(String folderId, User user) {
+        UUID uuid = UUID.fromString(folderId);
+        Folder folder = folderRepository.findByIdAndUser(uuid, user)
+                .orElseThrow(() -> new FolderNotFoundException(folderId));
+
+        // Ensure that files are loaded
+        List<File> files = folder.getFiles();
+
+        // Check if the authenticated user owns the folder
+        if (!folder.getUser().equals(user)) {
+            throw new AccessDeniedException("You do not have permission to access files in this folder");
+        }
+
+        return files;
     }
+
     @Transactional
-    public List<Folder> searchByFolderName(String search) {
-        List<Folder> findByFolderName = folderRepository.findByFolderNameContainingIgnoreCase(search);
+    public List<Folder> searchByFolderName(String search, User user) {
+        List<Folder> findByFolderName = folderRepository.findByFolderNameContainingIgnoreCaseAndUser(search, user);
 
         if (findByFolderName.isEmpty()) {
             throw new NoSearchResultFoundException(search);
@@ -68,9 +87,9 @@ public class FolderService {
         return findByFolderName;
     }
 
-    public Folder updateFolder(String id, UpdateFolderDto dto) {
+    public Folder updateFolder(String id, UpdateFolderDto dto, User user) {
         UUID uuid = UUID.fromString(id);
-        Folder folder = folderRepository.findById(uuid).orElseThrow(() -> new FolderNotFoundException(id));
+        Folder folder = folderRepository.findByIdAndUser(uuid, user).orElseThrow(() -> new FolderNotFoundException(id));
 
         if (dto.getFolderName().isPresent()) {
             folder.setFolderName(dto.getFolderName().get());
@@ -78,9 +97,9 @@ public class FolderService {
         return folderRepository.save(folder);
     }
 
-    public void deleteFolder(String id) {
+    public void deleteFolder(String id, User user) {
         UUID uuid = UUID.fromString(id);
-        Folder folder = folderRepository.findById(uuid).orElseThrow(() -> new FolderNotFoundException(id));
+        Folder folder = folderRepository.findByIdAndUser(uuid, user).orElseThrow(() -> new FolderNotFoundException(id));
         folderRepository.delete(folder);
     }
 }

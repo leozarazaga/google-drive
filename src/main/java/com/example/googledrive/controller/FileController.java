@@ -11,7 +11,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,20 +35,23 @@ public class FileController {
 
 
     @PostMapping("/file/upload")
-    public ResponseEntity<ResponseMessage> uploadFile(@RequestParam("file") MultipartFile file, @RequestParam("folderId") String folderId, @RequestParam("userId") String userId) {
+    public ResponseEntity<ResponseMessage> uploadFile(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("folderId") String folderId) {
+
         try {
-            fileService.store(file, folderId, userId);
+            User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+            fileService.store(file, folderId, user);
             String successMessage = "Uploaded the file successfully: " + file.getOriginalFilename();
             return new ResponseEntity<>(new ResponseMessage(successMessage), HttpStatus.CREATED);
         } catch (AccessDeniedException e) {
-            // Handle access denied exception
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ResponseMessage("Access denied: " + e.getMessage()));
         } catch (Exception e) {
             String errorMessage = "Could not upload file: " + file.getOriginalFilename();
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(errorMessage));
         }
     }
-
 
 
     @GetMapping("/files")

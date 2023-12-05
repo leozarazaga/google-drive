@@ -16,7 +16,7 @@ import java.io.IOException;
 
 public class JWTAuthorizationFilter extends OncePerRequestFilter {
 
-    private UserDetailsService userService;
+    private final UserDetailsService userService;
 
     public JWTAuthorizationFilter(UserDetailsService userService){
         this.userService = userService;
