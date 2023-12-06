@@ -14,7 +14,7 @@ import java.util.*;
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor
+
 
 @Table(name = "users")
 public class User implements UserDetails {
@@ -42,6 +42,9 @@ public class User implements UserDetails {
         this.username = username;
         this.password = password;
         this.email = email;
+    }
+
+    public User(){
     }
 
     @Override

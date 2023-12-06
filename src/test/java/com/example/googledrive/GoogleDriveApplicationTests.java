@@ -45,17 +45,17 @@ class GoogleDriveApplicationTests {
     private FileRepository fileRepository;
 
 
-	@BeforeEach
-	void clearDatabase() {
-		userRepository.deleteAll();
+    @BeforeEach
+    void clearDatabase() {
+        userRepository.deleteAll();
         folderRepository.deleteAll();
-	}
+    }
 
 
- /*   @Test
-    public void createUserTest() throws Exception{
+    @Test
+    public void createUserTest() throws Exception {
         String uniqueIdentifier = String.valueOf(System.currentTimeMillis());
-        User user = new User("testUser" + uniqueIdentifier, "test" + uniqueIdentifier + "@outlook.com");
+        User user = new User("testUser" + uniqueIdentifier, "password123", "test" + uniqueIdentifier + "@outlook.com");
 
 
         String userJson = objectMapper.writeValueAsString(user);
@@ -69,75 +69,28 @@ class GoogleDriveApplicationTests {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.username").value(user.getUsername()))
                 .andExpect(jsonPath("$.email").value(user.getEmail()));
+    }
 
-    }*/
-
-
-  /*  @Test
+    @Test
     public void uploadFileTest() throws Exception {
+        // Mock user
         String uniqueIdentifier = String.valueOf(System.currentTimeMillis());
-        User user = new User("testUser" + uniqueIdentifier, "test" + uniqueIdentifier + "@outlook.com");
+        User user = new User("testUser" + uniqueIdentifier, "password123", "test" + uniqueIdentifier + "@outlook.com");
+        userRepository.save(user);
 
-
-        String userJson = objectMapper.writeValueAsString(user);
-        RequestBuilder userRequest = MockMvcRequestBuilders.post("/user/create")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(userJson);
-
-
-        mockMvc.perform(userRequest)
-                .andExpect(status().isCreated())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.username").value(user.getUsername()))
-                .andExpect(jsonPath("$.email").value(user.getEmail()));
-
-
-        // Creating a folder
+        // Mock folder
         Folder folder = new Folder("TestFolder");
         folder.setUser(user);
-
-        // Save both user and folder
-        userRepository.save(user);
         folderRepository.save(folder);
 
-        String folderJson = objectMapper.writeValueAsString(folder);
-        RequestBuilder folderRequest = MockMvcRequestBuilders.post("/folder/create")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(folderJson);
+        // Create a MockMultipartFile for file upload
+        MockMultipartFile file = new MockMultipartFile("file", "test.txt", "text/plain", "Hello, World!".getBytes());
 
-        mockMvc.perform(folderRequest)
-                .andExpect(status().isCreated())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.folderName").value(folder.getFolderName()));
-
-        // Creating a file
-        MockMultipartFile file = new MockMultipartFile("file", "test-file.txt", MediaType.TEXT_PLAIN_VALUE, "Hello, World!".getBytes());
-
-        // Performing file upload
-        RequestBuilder fileUploadRequest = MockMvcRequestBuilders.multipart("/file/upload")
-                .file(file)
-                .param("folderId", folder.getId().toString())
-                .param("userId", user.getId().toString());
-
-
-        mockMvc.perform(fileUploadRequest)
-                .andExpect(status().isCreated())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message").value("Uploaded the file successfully: test-file.txt"));
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/folder/" + folder.getId() + "/upload")
+                        .file(file)
+                        .contentType(MediaType.MULTIPART_FORM_DATA))
+                .andExpect(status().isOk());
     }
-*/
-
- /*   @Test
-    public void deleteFileTest() throws Exception{
-        //MockMultipartFile file = new MockMultipartFile("file", "test-file.txt", MediaType.TEXT_PLAIN_VALUE, "Hello, World!".getBytes());
-
-        //Authentication logic
-        File file = new File("Test", "test-file.txt", "Hello William".getBytes());
-        file = fileRepository.save(file);
-
-        RequestBuilder fileUploadRequest = MockMvcRequestBuilders.delete("/file/delete/" + file.getId().toString());
-
-    }*/
 
 
 
