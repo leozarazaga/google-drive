@@ -15,6 +15,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
 @Slf4j
 @RestController
 public class FolderController {
@@ -45,12 +46,12 @@ public class FolderController {
         return new ResponseEntity<>(folder, HttpStatus.OK);
     }
 
+
     @GetMapping("/folder/{id}/files")
     public ResponseEntity<List<File>> getFilesFromFolder(@PathVariable String id, @AuthenticationPrincipal User user) {
         List<File> files = folderService.getFilesFromFolder(id, user);
         return new ResponseEntity<>(files, HttpStatus.OK);
     }
-
 
 
     @GetMapping("/folder/search/{search}")

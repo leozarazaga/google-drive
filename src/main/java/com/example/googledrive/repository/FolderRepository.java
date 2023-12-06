@@ -1,9 +1,12 @@
 package com.example.googledrive.repository;
 
+import com.example.googledrive.entity.File;
 import com.example.googledrive.entity.Folder;
 import com.example.googledrive.entity.User;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,6 +19,11 @@ public interface FolderRepository extends JpaRepository<Folder, UUID> {
 
     Optional<Folder> findByIdAndUser(UUID id, User user);
 
+   /* @Query("SELECT f.files FROM Folder f WHERE f.id = :folderId")
+    List<File> findFilesByFolderId(@Param("folderId") UUID folderId);*/
+
+    @Query("SELECT f.files FROM Folder f WHERE f.id = :folderId AND f.user = :user")
+    List<File> findFilesByFolderIdAndUser(@Param("folderId") UUID folderId, @Param("user") User user);
 
 
 }

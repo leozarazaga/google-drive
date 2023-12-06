@@ -11,15 +11,17 @@ import com.example.googledrive.exception.UserNotFoundException;
 import com.example.googledrive.repository.FolderRepository;
 import com.example.googledrive.repository.UserRepository;
 import org.hibernate.Hibernate;
+import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Connection;
 import java.util.List;
 import java.util.UUID;
-
+@Transactional
 @Service
 public class FolderService {
 
@@ -60,24 +62,24 @@ public class FolderService {
         return folder;
     }
 
-    //@Transactional
+
+    public Folder getFolderById(String id) {
+        UUID uuid = UUID.fromString(id);
+        Folder folder = folderRepository.findById(uuid).orElseThrow(() -> new FolderNotFoundException(id));
+        System.out.println("Folder found: " + folder);
+        return folder;
+    }
+
+
     public List<File> getFilesFromFolder(String folderId, User user) {
         UUID uuid = UUID.fromString(folderId);
         Folder folder = folderRepository.findByIdAndUser(uuid, user)
-                .orElseThrow(() -> new FolderNotFoundException(folderId));
+                .orElseThrow(() -> new AccessDeniedException("You do not have access to this folder"));
 
-        // Ensure that files are loaded
-        List<File> files = folder.getFiles();
-
-        // Check if the authenticated user owns the folder
-        if (!folder.getUser().equals(user)) {
-            throw new AccessDeniedException("You do not have permission to access files in this folder");
-        }
-
-        return files;
+        return folderRepository.findFilesByFolderIdAndUser(uuid, user);
     }
 
-    @Transactional
+
     public List<Folder> searchByFolderName(String search, User user) {
         List<Folder> findByFolderName = folderRepository.findByFolderNameContainingIgnoreCaseAndUser(search, user);
 

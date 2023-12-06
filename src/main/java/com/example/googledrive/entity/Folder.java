@@ -32,7 +32,7 @@ public class Folder {
 
     @JsonIgnore
     @OneToMany(mappedBy = "folder", cascade = CascadeType.ALL)
-    private List<File> files = new ArrayList<>();
+    private List<File> files;
 
     public Folder(String folderName) {
         this.folderName = folderName;

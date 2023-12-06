@@ -23,15 +23,15 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @NotBlank(message = "Username cannot be blank")
     @Column(unique = true)
+    @NotBlank(message = "Username cannot be blank")
     private String username;
 
     @NotBlank(message = "Password cannot be blank")
     private String password;
 
-    @NotBlank(message = "Email cannot be blank")
     @Column(unique = true)
+    @NotBlank(message = "Email cannot be blank")
     private String email;
 
     @JsonIgnore
