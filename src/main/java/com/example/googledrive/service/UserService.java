@@ -19,7 +19,7 @@ import java.util.UUID;
  * Service responsible for managing user-related operations.
  */
 @Service
-public class UserService implements UserDetailsService {
+public class UserService implements UserDetailsService{
 
     private final UserRepository userRepository;
 
@@ -97,4 +97,20 @@ public class UserService implements UserDetailsService {
         User user = userRepository.findById(uuid).orElseThrow(() -> new UserNotFoundException(id));
         userRepository.delete(user);
     }
+
+    /**
+     * Loads a user by their username for Spring Security authentication.
+     *
+     * @param username The username of the user to be loaded.
+     * @return The user details.
+     * @throws UsernameNotFoundException if the user is not found.
+     */
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        var user = this.userRepository
+                .findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Could not find user '" + username + "'."));
+        return user;
+    }
+
 }
