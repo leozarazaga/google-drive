@@ -24,6 +24,12 @@ import java.nio.charset.StandardCharsets;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+
+/**
+ * Integration tests for the Google Drive application.
+ * These tests cover user creation, file uploads, and file deletion scenarios.
+ * Each test method focuses on a specific functionality.
+ */
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
@@ -47,7 +53,11 @@ class GoogleDriveApplicationTests {
         folderRepository.deleteAll();
     }
 
-
+    /**
+     * Tests the process of creating a new user.
+     *
+     * @throws Exception if something unexpected happens during the test
+     */
     @Test
     public void createUserTest() throws Exception {
         String uniqueIdentifier = String.valueOf(System.currentTimeMillis());
@@ -67,54 +77,55 @@ class GoogleDriveApplicationTests {
                 .andExpect(jsonPath("$.email").value(user.getEmail()));
     }
 
+
+    /**
+     * Tests the scenario where we attempt to upload a file.
+     *
+     * @throws Exception if something unexpected happens during the test
+     */
     @Test
     public void uploadFileTest() throws Exception {
-        // Create a test user
         String uniqueIdentifier = String.valueOf(System.currentTimeMillis());
         User testUser = new User("testUser" + uniqueIdentifier, "password123", "test" + uniqueIdentifier + "@outlook.com");
 
-        // Save the user to the repository
         userRepository.save(testUser);
 
-        // Authenticate the test user
         Authentication auth = new UsernamePasswordAuthenticationToken(testUser, null, testUser.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(auth);
 
-        // Create a test file
         MockMultipartFile file = new MockMultipartFile(
                 "file", "test.txt", MediaType.TEXT_PLAIN_VALUE,
                 "Hello, World!".getBytes(StandardCharsets.UTF_8));
 
-        // Update the test to expect 417 status since authentication details are provided
         mockMvc.perform(MockMvcRequestBuilders.multipart("/file/upload")
                         .file(file)
                         .param("folderId", "yourFolderId"))
                 .andExpect(MockMvcResultMatchers.status().isExpectationFailed())
                 .andExpect(MockMvcResultMatchers.content().json("{\"message\":\"Could not upload file: test.txt\"}"));
 
-        // Clear authentication after the test
         SecurityContextHolder.clearContext();
     }
 
+
+    /**
+     * Tests what happens when we try to delete a file.
+     *
+     * @throws Exception in case something goes wrong during the test
+     */
     @Test
     public void deleteFileTest() throws Exception {
-        // Create a test user
         String uniqueIdentifier = String.valueOf(System.currentTimeMillis());
         User testUser = new User("testUser" + uniqueIdentifier, "password123", "test" + uniqueIdentifier + "@outlook.com");
 
-        // Save the user to the repository
         userRepository.save(testUser);
 
-        // Authenticate the test user
         Authentication auth = new UsernamePasswordAuthenticationToken(testUser, null, testUser.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(auth);
 
-        // Create a test file
         MockMultipartFile file = new MockMultipartFile(
                 "file", "test.txt", MediaType.TEXT_PLAIN_VALUE,
                 "Hello, World!".getBytes(StandardCharsets.UTF_8));
 
-        // Upload the file
         mockMvc.perform(MockMvcRequestBuilders.multipart("/file/upload")
                         .file(file)
                         .param("folderId", "yourFolderId"))

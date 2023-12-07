@@ -8,6 +8,10 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * ErrorResponse class representing a detailed error response for API exceptions.
+ * Utilizes Lombok annotations for automatic generation of getters and setters.
+ */
 @Getter
 @Setter
 @AllArgsConstructor

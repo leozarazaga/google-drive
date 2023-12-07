@@ -11,11 +11,22 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.*;
 
+/**
+ * Entity class representing a user in the system.
+ * Each user has a unique identifier, a username, password, and email.
+ * Users can own multiple folders and are associated with security-related details.
+ *
+ * The class is annotated with JPA annotations to specify its persistence in the database.
+ * Implements UserDetails interface for Spring Security integration.
+ *
+ * @Entity - Indicates that this class is a JPA entity.
+ * @Table - Specifies the name of the database table to which this entity is mapped.
+ * @Getter - Lombok annotation to auto-generate getter methods for all fields.
+ * @Setter - Lombok annotation to auto-generate setter methods for all fields.
+ */
 @Entity
 @Getter
 @Setter
-
-
 @Table(name = "users")
 public class User implements UserDetails {
 

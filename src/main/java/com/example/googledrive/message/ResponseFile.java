@@ -3,6 +3,10 @@ package com.example.googledrive.message;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * ResponseFile class representing details of a file for API responses.
+ * Utilizes Lombok annotations for automatic generation of getters and setters.
+ */
 @Getter
 @Setter
 public class ResponseFile {

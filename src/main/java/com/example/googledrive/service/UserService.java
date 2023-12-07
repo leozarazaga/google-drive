@@ -15,6 +15,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Service responsible for managing user-related operations.
+ */
 @Service
 public class UserService implements UserDetailsService {
 
@@ -29,23 +32,46 @@ public class UserService implements UserDetailsService {
 
     }
 
-    /*    - - - - - - - - - - - - - - - - - - -   */
-
+    /**
+     * Creates a new user based on the provided user details.
+     *
+     * @param dto The details of the user to be created.
+     * @return The newly created user.
+     */
     public User createUser(CreateUserDto dto) {
         User user = new User(dto.getUsername(), encoder.encode(dto.getPassword()), dto.getEmail());
         return userRepository.save(user);
     }
 
+    /**
+     * Retrieves a list of all users in the system.
+     *
+     * @return A list of all users.
+     */
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
+    /**
+     * Retrieves a user by their unique identifier.
+     *
+     * @param id The unique identifier of the user.
+     * @return The user with the specified identifier.
+     * @throws UserNotFoundException if the user is not found.
+     */
     public User getUserById(String id) {
         UUID uuid = UUID.fromString(id);
         return userRepository.findById(uuid).orElseThrow(() -> new UserNotFoundException(id));
     }
 
-
+    /**
+     * Updates the details of an existing user.
+     *
+     * @param id  The unique identifier of the user to be updated.
+     * @param dto The updated details of the user.
+     * @return The updated user.
+     * @throws UserNotFoundException if the user is not found.
+     */
     public User updateUser(String id, UpdateUserDto dto) {
         UUID uuid = UUID.fromString(id);
         User user = userRepository.findById(uuid).orElseThrow(() -> new UserNotFoundException(id));
@@ -60,18 +86,15 @@ public class UserService implements UserDetailsService {
         return userRepository.save(user);
     }
 
+    /**
+     * Deletes a user by their unique identifier.
+     *
+     * @param id The unique identifier of the user to be deleted.
+     * @throws UserNotFoundException if the user is not found.
+     */
     public void deleteUser(String id) {
         UUID uuid = UUID.fromString(id);
         User user = userRepository.findById(uuid).orElseThrow(() -> new UserNotFoundException(id));
         userRepository.delete(user);
-    }
-
-
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        var user = this.userRepository
-                .findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Could not find user '" + username + "'."));
-        return user;
     }
 }

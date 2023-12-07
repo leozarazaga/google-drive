@@ -22,6 +22,13 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Controller for handling file-related operations.
+ * Provides endpoints for uploading, retrieving, and deleting files.
+ *
+ * The class is annotated with Spring's RestController, indicating that it handles RESTful API requests.
+ * Each method is documented to describe its purpose and functionality.
+ */
 @RestController
 public class FileController {
     private final FileService fileService;
@@ -31,9 +38,13 @@ public class FileController {
         this.fileService = fileService;
     }
 
-    /*    - - - - - - - - - - - - - - - - - - -   */
-
-
+    /**
+     * Endpoint for uploading a file to a specified folder.
+     *
+     * @param file      The MultipartFile representing the uploaded file.
+     * @param folderId  The ID of the folder to which the file should be uploaded.
+     * @return ResponseEntity containing a ResponseMessage indicating success or failure.
+     */
     @PostMapping("/file/upload")
     public ResponseEntity<ResponseMessage> uploadFile(
             @RequestParam("file") MultipartFile file,
@@ -53,7 +64,12 @@ public class FileController {
         }
     }
 
-
+    /**
+     * Endpoint for retrieving all files associated with the authenticated user.
+     *
+     * @param user The authenticated user obtained from the security context.
+     * @return ResponseEntity containing a list of ResponseFile objects representing the user's files.
+     */
     @GetMapping("/files")
     public ResponseEntity<List<ResponseFile>> retrieveAllFilesByUser(@AuthenticationPrincipal User user) {
         List<ResponseFile> files = fileService.getAllFilesByUser(user).stream().map(dbFile -> {
@@ -76,7 +92,13 @@ public class FileController {
         return ResponseEntity.status(HttpStatus.OK).body(files);
     }
 
-
+    /**
+     * Endpoint for retrieving a file by its ID.
+     *
+     * @param id   The ID of the file to be retrieved.
+     * @param user The authenticated user obtained from the security context.
+     * @return ResponseEntity containing the file data and headers for download.
+     */
     @GetMapping("/files/{id}")
     public ResponseEntity<byte[]> retrieveFileById(@PathVariable String id, @AuthenticationPrincipal User user) {
         File file = fileService.getFileByUser(id, user);
@@ -86,7 +108,13 @@ public class FileController {
         return new ResponseEntity<>(file.getData(), headers, HttpStatus.OK);
     }
 
-
+    /**
+     * Endpoint for deleting a file by its ID.
+     *
+     * @param id   The ID of the file to be deleted.
+     * @param user The authenticated user obtained from the security context.
+     * @return ResponseEntity with a HttpStatus indicating success (NO_CONTENT).
+     */
     @DeleteMapping("/files/delete/{id}")
     public ResponseEntity<HttpStatus> deleteFileById(@PathVariable String id, @AuthenticationPrincipal User user) {
         fileService.deleteFileByUser(id, user);

@@ -9,8 +9,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-
-//@Transactional
+/**
+ * Repository interface for managing File entities in the database.
+ * Extends JpaRepository to provide CRUD operations on File entities.
+ */
 public interface FileRepository extends JpaRepository<File, UUID> {
     List<File> findByUser(User user);
     Optional<File> findByIdAndUser(UUID id, User user);

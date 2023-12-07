@@ -12,18 +12,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Repository interface for managing Folder entities in the database.
+ * Extends JpaRepository to provide CRUD operations on Folder entities.
+ */
 public interface FolderRepository extends JpaRepository<Folder, UUID> {
     List<Folder> findByFolderNameContainingIgnoreCaseAndUser(String search, User user);
-
     List<Folder> findByUser(User user);
-
     Optional<Folder> findByIdAndUser(UUID id, User user);
-
-   /* @Query("SELECT f.files FROM Folder f WHERE f.id = :folderId")
-    List<File> findFilesByFolderId(@Param("folderId") UUID folderId);*/
-
     @Query("SELECT f.files FROM Folder f WHERE f.id = :folderId AND f.user = :user")
     List<File> findFilesByFolderIdAndUser(@Param("folderId") UUID folderId, @Param("user") User user);
-
-
 }
