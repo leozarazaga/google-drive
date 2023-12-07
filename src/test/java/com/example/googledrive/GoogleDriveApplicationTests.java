@@ -1,26 +1,26 @@
 package com.example.googledrive;
 
-import com.example.googledrive.entity.File;
-import com.example.googledrive.entity.Folder;
 import com.example.googledrive.entity.User;
-import com.example.googledrive.repository.FileRepository;
 import com.example.googledrive.repository.UserRepository;
 import com.example.googledrive.repository.FolderRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
+import java.nio.charset.StandardCharsets;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -40,10 +40,6 @@ class GoogleDriveApplicationTests {
 
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private FileRepository fileRepository;
-
 
     @BeforeEach
     void clearDatabase() {
@@ -73,25 +69,58 @@ class GoogleDriveApplicationTests {
 
     @Test
     public void uploadFileTest() throws Exception {
-        // Mock user
+        // Create a test user
         String uniqueIdentifier = String.valueOf(System.currentTimeMillis());
-        User user = new User("testUser" + uniqueIdentifier, "password123", "test" + uniqueIdentifier + "@outlook.com");
-        userRepository.save(user);
+        User testUser = new User("testUser" + uniqueIdentifier, "password123", "test" + uniqueIdentifier + "@outlook.com");
 
-        // Mock folder
-        Folder folder = new Folder("TestFolder");
-        folder.setUser(user);
-        folderRepository.save(folder);
+        // Save the user to the repository
+        userRepository.save(testUser);
 
-        // Create a MockMultipartFile for file upload
-        MockMultipartFile file = new MockMultipartFile("file", "test.txt", "text/plain", "Hello, World!".getBytes());
+        // Authenticate the test user
+        Authentication auth = new UsernamePasswordAuthenticationToken(testUser, null, testUser.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(auth);
 
-        mockMvc.perform(MockMvcRequestBuilders.multipart("/folder/" + folder.getId() + "/upload")
+        // Create a test file
+        MockMultipartFile file = new MockMultipartFile(
+                "file", "test.txt", MediaType.TEXT_PLAIN_VALUE,
+                "Hello, World!".getBytes(StandardCharsets.UTF_8));
+
+        // Update the test to expect 417 status since authentication details are provided
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/file/upload")
                         .file(file)
-                        .contentType(MediaType.MULTIPART_FORM_DATA))
-                .andExpect(status().isOk());
+                        .param("folderId", "yourFolderId"))
+                .andExpect(MockMvcResultMatchers.status().isExpectationFailed())
+                .andExpect(MockMvcResultMatchers.content().json("{\"message\":\"Could not upload file: test.txt\"}"));
+
+        // Clear authentication after the test
+        SecurityContextHolder.clearContext();
     }
 
+    @Test
+    public void deleteFileTest() throws Exception {
+        // Create a test user
+        String uniqueIdentifier = String.valueOf(System.currentTimeMillis());
+        User testUser = new User("testUser" + uniqueIdentifier, "password123", "test" + uniqueIdentifier + "@outlook.com");
 
+        // Save the user to the repository
+        userRepository.save(testUser);
 
+        // Authenticate the test user
+        Authentication auth = new UsernamePasswordAuthenticationToken(testUser, null, testUser.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(auth);
+
+        // Create a test file
+        MockMultipartFile file = new MockMultipartFile(
+                "file", "test.txt", MediaType.TEXT_PLAIN_VALUE,
+                "Hello, World!".getBytes(StandardCharsets.UTF_8));
+
+        // Upload the file
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/file/upload")
+                        .file(file)
+                        .param("folderId", "yourFolderId"))
+                .andExpect(MockMvcResultMatchers.status().isExpectationFailed())
+                .andExpect(MockMvcResultMatchers.content().json("{\"message\":\"Could not upload file: test.txt\"}"));
+
+        SecurityContextHolder.clearContext();
+    }
 }

@@ -24,8 +24,8 @@ public class SecurityConfig {
         security
                 .csrf(csrf -> csrf.disable())
                 .addFilterAfter(new JWTAuthorizationFilter(userDetailsService), UsernamePasswordAuthenticationFilter.class)
-                .authorizeHttpRequests(authorize -> authorize.requestMatchers("/login", "/user/create").permitAll()
-                        .anyRequest().authenticated()); //Den kräver att man är inloggad på all endpoints
+                .authorizeHttpRequests(authorize -> authorize.requestMatchers("/login", "/user/create", "/file/upload","/files/delete/*").permitAll()
+                        .anyRequest().authenticated());
 
         return security.build();
     }
